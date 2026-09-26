@@ -31,26 +31,30 @@ body{height:1400vh}
 #persp{position:absolute;left:0;top:0;width:1920px;height:1080px;perspective:1500px;perspective-origin:22% 70%}
 #bldg{position:absolute;left:980px;top:-1700px;width:1500px;height:2470px;transform-style:preserve-3d;transform:rotateY(22deg);transform-origin:0 50%}
 .face{position:absolute;top:0;height:100%}
-#front{left:0;width:1500px;background:repeating-linear-gradient(0deg,#0000 0 3px,#ffffff04 3px 4px),linear-gradient(90deg,#1e1c24,#17161c 50%,#101015);box-shadow:inset 0 0 140px #0009}
+/* ground floor is its own face: Chrome on Android drops the bottom of one tall 3D-transformed layer */
+#front{left:0;width:1500px;height:2000px;background:repeating-linear-gradient(0deg,#0000 0 3px,#ffffff04 3px 4px),linear-gradient(90deg,#1e1c24,#17161c 50%,#101015);box-shadow:inset 0 0 140px #0009}
 #side{left:0;width:520px;transform-origin:0 50%;transform:rotateY(90deg);background:repeating-linear-gradient(0deg,#0000 0 3px,#ffffff05 3px 4px),linear-gradient(90deg,#2a2731,#1b1a21 60%,#111016)}
 .win{position:absolute;width:128px;height:150px;background:#07080c;box-shadow:inset 0 0 0 5px #0e0d12,inset 0 0 0 7px #2a2830,inset 14px 14px 0 7px #0009}
 .win.lit{background:radial-gradient(circle at 35% 30%,#ffe2b0 0,#f0a456 18%,#a8581f 55%,#3a1d0c)}
 .swin{position:absolute;width:70px;height:120px;background:#07080c;box-shadow:inset 0 0 0 4px #0e0d12,inset 8px 8px 0 4px #0008}
 .ledge{position:absolute;left:0;right:0;height:14px;background:linear-gradient(#34313b,#1a191f 60%,#0c0b10);box-shadow:0 12px 18px #000c}
 /* lobby */
-#lobby{position:absolute;left:40px;right:40px;top:2150px;height:320px;background:linear-gradient(#ffe9c6,#f3c98e 50%,#d99a55);box-shadow:0 0 120px 30px #ffb86a55;overflow:hidden}
+#base{left:0;top:2000px;width:1500px;height:470px;background:repeating-linear-gradient(0deg,#0000 0 3px,#ffffff04 3px 4px),linear-gradient(90deg,#1e1c24,#17161c 50%,#101015)}
+#lobby{position:absolute;left:40px;right:40px;top:150px;height:320px;background:linear-gradient(#ffe9c6,#f3c98e 50%,#d99a55);box-shadow:0 0 120px 30px #ffb86a55;overflow:hidden}
 #lobby .mull{position:absolute;top:0;bottom:0;width:10px;background:#1a1712}
 #lobby .desk{position:absolute;left:380px;bottom:70px;width:320px;height:70px;background:linear-gradient(#3a2a1a,#1e150d);border-radius:6px 6px 0 0}
 #lobby .plant{position:absolute;bottom:60px;width:60px;height:130px;background:radial-gradient(ellipse at 50% 30%,#2b3a1c 55%,#0000 57%)}
 #lobby .reflect{position:absolute;inset:0;background:linear-gradient(115deg,#fff3 0,#0000 30%,#fff1 55%,#0000 70%)}
-#door{position:absolute;left:180px;top:2200px;width:170px;height:270px;background:linear-gradient(#fff7e5,#ffd79c);box-shadow:inset 0 0 0 8px #1a1712,0 0 60px #ffcf8a88}
-#door::after{content:'';position:absolute;left:50%;top:8px;bottom:8px;width:6px;background:#1a1712;transform:translateX(-50%)}
+#door{position:absolute;left:180px;top:200px;width:170px;height:270px;background:linear-gradient(#fff7e5,#ffd79c);box-shadow:inset 0 0 0 8px #1a1712,0 0 60px #ffcf8a88}
+#door{overflow:hidden;background:linear-gradient(#fff3da,#e8b574 70%,#b9793c)!important}
+#door i{position:absolute;top:8px;bottom:8px;width:calc(50% - 8px);background:linear-gradient(115deg,#fffaf0 0,#ffe3b3 45%,#ffd08c);box-shadow:inset 0 0 0 3px #1a1712}
+#door .dl{left:8px}#door .dr{right:8px}
 /* sign board */
-#sign{position:absolute;left:30px;top:2020px;width:760px;height:118px;background:linear-gradient(#141318,#0b0a0e);border-radius:6px;box-shadow:0 18px 30px #000c,inset 0 1px 0 #ffffff1a;transform:translateZ(26px);display:flex;align-items:center;gap:26px;padding:0 40px;box-sizing:border-box}
+#sign{position:absolute;left:30px;top:20px;width:760px;height:118px;background:linear-gradient(#141318,#0b0a0e);border-radius:6px;box-shadow:0 18px 30px #000c,inset 0 1px 0 #ffffff1a;transform:translateZ(26px);display:flex;align-items:center;gap:26px;padding:0 40px;box-sizing:border-box}
 #sign img{width:74px;height:74px;filter:drop-shadow(0 0 12px #3aa0ff) drop-shadow(0 0 30px #3aa0ff88);border-radius:10px}
 #sign .t{color:#eef6ff;font:600 58px/1 Inter,system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:-1px;text-shadow:0 0 18px #7cc4ffaa,0 0 40px #3aa0ff66}
 #sign .t small{display:block;font:500 17px Inter,system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:10px;color:#9fd2ffcc;margin-top:8px;text-shadow:0 0 10px #3aa0ff88}
-#signglow{position:absolute;left:0;top:2130px;width:840px;height:80px;background:radial-gradient(ellipse at 45% 0%,#3aa0ff55,#0000 70%);transform:translateZ(20px)}
+#signglow{position:absolute;left:0;top:130px;width:840px;height:80px;background:radial-gradient(ellipse at 45% 0%,#3aa0ff55,#0000 70%);transform:translateZ(20px)}
 /* street */
 #street{position:absolute;left:-2900px;right:-2900px;top:760px;height:1400px;background:linear-gradient(#1a1614,#0b0a0c 40%,#050507)}
 #curb{position:absolute;left:-2900px;right:-2900px;top:760px;height:6px;background:#2b2724}
@@ -114,10 +118,10 @@ html.lowmem #bldg{zoom:.5;left:1960px;top:-3400px;transform-origin:0 0}
  <div id="sky"></div>
  <div id="ground"></div><div id="cam"><canvas id="city" width="2400" height="600" style="width:4800px;height:1200px"></canvas><div id="street"></div><div id="wet"></div><div id="curb"></div>
  <div id="persp"><div id="bldg"><div class="face" id="side"></div><div class="face" id="front">
-  <div id="lobby"><div class="mull" style="left:0"></div><div class="mull" style="left:360px"></div><div class="mull" style="left:720px"></div><div class="mull" style="left:1080px"></div><div class="mull" style="right:0"></div><div class="desk"></div><div class="plant" style="left:760px"></div><div class="plant" style="left:1000px"></div><div class="reflect"></div></div>
-  <div id="door"></div><div id="signglow"></div>
-  <div id="sign"><img src="logo_raw.jpg" alt=""><div class="t">Fegno Technologies<small>BUILD BEYOND THE MARKS</small></div></div>
- </div></div></div>
+  </div>
+ <div class="face" id="base"><div id="lobby"><div class="mull" style="left:0"></div><div class="mull" style="left:360px"></div><div class="mull" style="left:720px"></div><div class="mull" style="left:1080px"></div><div class="mull" style="right:0"></div><div class="desk"></div><div class="plant" style="left:760px"></div><div class="plant" style="left:1000px"></div><div class="reflect"></div></div>
+  <div id="door"><i class="dl"></i><i class="dr"></i></div><div id="signglow"></div>
+  <div id="sign"><img src="logo_raw.jpg" alt=""><div class="t">Fegno Technologies<small>BUILD BEYOND THE MARKS</small></div></div></div></div></div>
  <svg id="jline" width="1920" height="1080"><defs><filter id="jg"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="jgr" gradientUnits="userSpaceOnUse" x1="0" y1="900" x2="0" y2="-1500"><stop offset="0" stop-color="#ffc98a"/><stop offset=".6" stop-color="#ff9d6a"/><stop offset="1" stop-color="#9cc4ff"/></linearGradient></defs><path id="jglow" fill="none" stroke="url(#jgr)" stroke-width="16" opacity=".22" stroke-linecap="round" stroke-linejoin="round"/><path id="jp" fill="none" stroke="url(#jgr)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path id="jfut" fill="none" stroke="#ffc98a" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round" opacity="0"/><g id="jdots"></g></svg><div id="cone"></div><div id="pool"></div><div id="lamp"></div><div id="bulb"></div>
  <div id="refl"></div><div id="srefl"></div><div id="shadow"></div>
  <svg id="boy" viewBox="0 0 110 250" style="overflow:visible;filter:drop-shadow(2.5px 0 0 #ffcf8acc) drop-shadow(0 0 10px #ffb86a44)">
@@ -179,7 +183,7 @@ for(let j=0;j<10;j++){const y=1830-190*j;const l=document.createElement('div');l
  for(let c=0;c<8;c++){const w=document.createElement('div');w.className='win';w.style.left=(70+c*170)+'px';w.style.top=y+'px';F.appendChild(w);
   const o={el:w,j,c,type:'bg',lf:Math.max(0.4,(j-1.5)*36/8-4+H(j*13+c)*14),look:Math.floor(H(j*7+c*3)*4)};cells[j+','+c]=o;wins.push(o)}
  for(let c=0;c<3;c++){const w=document.createElement('div');w.className='swin';w.style.left=(90+c*140)+'px';w.style.top=(y+15)+'px';SIDE.appendChild(w);wins.push({el:w,j,c,type:'side',lf:Math.max(0.6,(j-1.5)*36/8-3+H(j*5+c)*16)})}}
-const l0=document.createElement('div');l0.className='ledge';l0.style.top='2000px';F.appendChild(l0);
+const l0=document.createElement('div');l0.className='ledge';l0.style.top='0';document.getElementById('base').appendChild(l0);
 // snake layout: floor 1 left→right, floor 2 right→left, ...
 const evs=[];let fl=1,cur=1;
 EV.forEach(([f,kind,title,sub,id],i)=>{const w=kind=='ph'?2:1;if(cur+w>8){fl++;cur=0}
@@ -245,6 +249,7 @@ function render(t){
  $('l1a').textContent=A.slice(0,n1);$('l1b').textContent=B2.slice(0,Math.max(0,n1-A.length));$('l1c').textContent='';
  const L1=$('lab1');if(PORT){L1.style.right='auto';L1.style.left=(x+42-170)+'px';L1.style.width='340px';L1.style.textAlign='center';L1.style.top='190px';L1.style.transformOrigin='50% 0'}else{L1.style.left='auto';L1.style.right=(1920-x+30)+'px';L1.style.top='560px'}L1.style.opacity=1-cl((t-3.6)/.5);
  $('door').style.filter=`brightness(${1+.35*Math.exp(-Math.pow((t-3.1)/.25,2))})`;
+ {const o=ease(cl((t-2.45)/.45))*(1-ease(cl((t-3.35)/.5)));$('door').querySelector('.dl').style.transform=`translateX(${-o*100}%)`;$('door').querySelector('.dr').style.transform=`translateX(${o*100}%)`}
  // ---- camera
  let S=1,X=0,T=0,ei=-1,frac=0;
  if(t>=E0-.4){ei=Math.min(NE-1,Math.floor((t-E0)/DT));frac=0}
@@ -256,8 +261,9 @@ function render(t){
   const[ax,ay]=camAt(i,rot);let cx=ax,cy=ay,z=Z(i);
   if(i+1<NE){const[bx2,by2]=camAt(i+1,rot);cx=lerp(ax,bx2,q);cy=lerp(ay,by2,q);z=lerp(Z(i),Z(i+1),q);frac=tr}
   S=z;X=cx+OFF();T=cy;ei=i}
- else{const po=ease((t-PB)/5.2),[lx,ly]=camAt(NE-1,0);rot=lerp(0,22,po);S=lerp(Z(NE-1),(PORT?.2:.34)*Math.min(1,VH/1080),po);X=lerp(lx+OFF(),PORT?-390:820,po);T=lerp(ly,PORT?2230:560,po);ei=NE-1;frac=0}
+ else{const po=ease((t-PB)/5.2),[lx,ly]=camAt(NE-1,0);rot=lerp(0,22,po);S=lerp(Z(NE-1),(PORT?.18:.34)*Math.min(1,VH/1080),po);X=lerp(lx+OFF(),PORT?-390:820,po);T=lerp(ly,PORT?1390:560,po);ei=NE-1;frac=0}
  $('cam').style.transform=`translate(960px,540px) scale(${S}) translate(-960px,-540px) translate(${X}px,${T}px)`;
+ $('vig').style.opacity=t>PB?1-.8*ease((t-PB)/5.2):1;
  {const gy=540+S*(760+T-540);$('ground').style.top=Math.max(-50,Math.min(1200,gy))+'px'}
  $('bldg').style.transform=`${BZ}rotateY(${rot}deg)`;
  $('sky').style.transform=`translateY(${Math.max(0,T)*.3*S}px)`;
