@@ -10,7 +10,7 @@
 :root[data-theme="dark"]{--bg:#05060b}
 html,body{margin:0;background:var(--bg)}
 body{height:1400vh}
-#view{position:fixed;inset:0;overflow:hidden;background:#05060b}
+#view{position:fixed;inset:0;height:100vh;height:100lvh;overflow:hidden;background:#05060b}
 #hint{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);color:#f3e9dccc;font:500 13px Inter,system-ui,sans-serif;letter-spacing:5px;text-align:center;transition:opacity .4s;pointer-events:none}
 #hint i{display:block;width:1px;height:38px;margin:12px auto 0;background:linear-gradient(#ffc98a,#0000);animation:dr 1.6s ease-in-out infinite}
 @keyframes dr{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
@@ -106,6 +106,9 @@ body{height:1400vh}
 #fin{position:absolute;left:96px;top:120px;color:#f6ecdf;opacity:0}
 #fin .t{font:italic 400 120px/0.95 'Instrument Serif',serif;text-shadow:0 0 34px #ffb46a66}
 #fin .s{font:500 16px Inter,system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:5px;color:#ffc98acc;margin-top:26px}
+html.lowmem #bldg{zoom:.5;left:1960px;top:-3400px;transform-origin:0 0}
+@media (pointer:coarse){#grain{display:none}#wet,#refl,#srefl,#cone{filter:none}#boy{filter:none!important}#sign img{filter:none}
+ #snd,#auto{-webkit-backdrop-filter:none;backdrop-filter:none;background:#0d0f1aee}}
 </style></head><body>
 <div id="view"><div id="stage">
  <div id="sky"></div>
@@ -203,8 +206,11 @@ const evT=i=>E0+i*DT;                                      // camera arrives, wi
 // measure event centres in cam space (neutral camera)
 let P=null;
 let P0=null;
+// Touch devices: the 3D building face is rastered whole at device resolution (~300MB at DPR 4),
+// which exhausts Chrome's GPU tile budget and leaves frames dark. Lay it out at half size and scale it back up.
+const BZ=matchMedia('(pointer:coarse)').matches?'scale(2) ':'';if(BZ)document.documentElement.classList.add('lowmem');
 function measure(){$('cam').style.transform='none';const sr=$('stage').getBoundingClientRect(),k=1920/sr.width;
- const m=r=>{$('bldg').style.transform=`rotateY(${r}deg)`;return evs.map(e=>{const b=e.el.getBoundingClientRect();return[(b.left+b.width/2-sr.left)*k,(b.top+b.height/2-sr.top)*k,b.width*k]})};
+ const m=r=>{$('bldg').style.transform=`${BZ}rotateY(${r}deg)`;return evs.map(e=>{const b=e.el.getBoundingClientRect();return[(b.left+b.width/2-sr.left)*k,(b.top+b.height/2-sr.top)*k,b.width*k]})};
  P0=m(0);P=m(22)}
 function pathTo(n,frac){let d='';for(let i=0;i<=n;i++){const[x,y]=P[i];d+=(i?'L':'M')+x+' '+y}
  if(n+1<P.length&&frac>0){const[x0,y0]=P[n],[x1,y1]=P[n+1];d+=`L${x0+(x1-x0)*frac} ${y0+(y1-y0)*frac}`}return d}
@@ -253,7 +259,7 @@ function render(t){
  else{const po=ease((t-PB)/5.2),[lx,ly]=camAt(NE-1,0);rot=lerp(0,22,po);S=lerp(Z(NE-1),(PORT?.2:.34)*Math.min(1,VH/1080),po);X=lerp(lx+OFF(),PORT?-390:820,po);T=lerp(ly,PORT?2230:560,po);ei=NE-1;frac=0}
  $('cam').style.transform=`translate(960px,540px) scale(${S}) translate(-960px,-540px) translate(${X}px,${T}px)`;
  {const gy=540+S*(760+T-540);$('ground').style.top=Math.max(-50,Math.min(1200,gy))+'px'}
- $('bldg').style.transform=`rotateY(${rot}deg)`;
+ $('bldg').style.transform=`${BZ}rotateY(${rot}deg)`;
  $('sky').style.transform=`translateY(${Math.max(0,T)*.3*S}px)`;
  // ---- windows: events light in turn, background fills gently with time
  const curF=ei<0?-1:lerp(evs[ei].f,ei+1<NE?evs[ei+1].f:36,frac)+(t>EEND?4*cl((t-EEND)/4):0);
@@ -330,15 +336,16 @@ const SFX=(()=>{let ctx=null,master=null,amb=null,ambG=null,musG=null,on=false,n
 
 window.__render=render;
 document.body.dataset.ready=1;
-function fit(){const st=document.getElementById('stage'),a=innerWidth/innerHeight;PORT=a<1;CEN=a<1.5;
- const sc=Math.max(innerWidth/1920,innerHeight/1080);VW=Math.min(1920,1080*a);VH=Math.min(1080,1920/a);UI=Math.max(1,0.62/sc);
+let fitW=0,fitH=0;
+function fit(){if(innerWidth===fitW&&Math.abs(innerHeight-fitH)<160)return;fitW=innerWidth;fitH=innerHeight;const st=document.getElementById('stage'),vh=document.getElementById('view').clientHeight||innerHeight,a=innerWidth/vh;PORT=a<1;CEN=a<1.5;
+ const sc=Math.max(innerWidth/1920,vh/1080);VW=Math.min(1920,1080*a);VH=Math.min(1080,1920/a);UI=Math.max(1,0.62/sc);
  st.style.transform=`translate(-50%,-50%) scale(${sc})`;lastEv=-1;render.__sp=-1;render.__m=-1;window.__dirty=1}
 addEventListener('resize',fit);fit();
 (()=>{const t0=performance.now();let lastT=-1,prog=0;
  const bar=document.getElementById('bar'),hint=document.getElementById('hint');
  let lenis=null;
  addEventListener('scroll',()=>{if(lenis)return;const m=document.documentElement.scrollHeight-innerHeight;prog=m>0?scrollY/m:0},{passive:true});
- window.__lenisReady=()=>{if(lenis||typeof Lenis==='undefined'||matchMedia('(prefers-reduced-motion: reduce)').matches)return;try{lenis=new Lenis({lerp:0.075,wheelMultiplier:0.9,touchMultiplier:1.4,smoothWheel:true,syncTouch:true,syncTouchLerp:0.08});lenis.on('scroll',e=>{prog=e.progress||0})}catch(err){lenis=null}};
+ window.__lenisReady=()=>{if(lenis||typeof Lenis==='undefined'||matchMedia('(prefers-reduced-motion: reduce)').matches)return;try{lenis=new Lenis({lerp:0.075,wheelMultiplier:0.9,touchMultiplier:1.4,smoothWheel:true,syncTouch:!matchMedia('(pointer:coarse)').matches,syncTouchLerp:0.08});lenis.on('scroll',e=>{prog=e.progress||0})}catch(err){lenis=null}};
  window.__lenisReady();
  let auto=false,lastNow=performance.now();const btn=document.getElementById('auto');
  const curY=()=>lenis?lenis.scroll:scrollY,maxY=()=>document.documentElement.scrollHeight-innerHeight;
