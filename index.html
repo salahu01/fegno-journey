@@ -256,11 +256,11 @@ function render(t){
  pose(ph,walk?.42:0);const b=$('boy');
  b.style.left=x+'px';b.style.top=(fy-192*s+(walk?-2*Math.abs(Math.sin(ph)):0))+'px';b.style.width=(84*s)+'px';b.style.height=(192*s)+'px';
  const dOpen=ease(cl((t-2.45)/.45))*(1-ease(cl((t-3.55)/.5)));
- // once inside he is only seen through the doorway gap, then faintly through the closed glass
- b.style.opacity=t<3.55?1:t<4.05?1:Math.max(0,.35*(1-cl((t-4.05)/.5)));
+ // once inside he is only seen through the doorway gap; gone when the doors meet
+ b.style.opacity=t<4.05?1:0;
  if(t>3.3&&t<4.05){const d=$('door').getBoundingClientRect(),r=b.getBoundingClientRect(),g=(d.width/2-8)*dOpen,cx=d.left+d.width/2;
   const L=cl((cx-g-r.left)/r.width)*100,R=cl((r.right-cx-g)/r.width)*100;b.style.clipPath=`inset(0 ${R}% 0 ${L}%)`;
-  if(t>3.55&&g<2)b.style.opacity=.35}else b.style.clipPath='';
+  if(t>3.55&&g<2)b.style.opacity=0}else b.style.clipPath='';
  $('shadow').style.left=(x-140)+'px';$('shadow').style.top=(fy-14)+'px';$('shadow').style.opacity=t<3.1?1:0;
  if(!render.__dx&&t<3.3){const d=$('door').getBoundingClientRect(),r=b.getBoundingClientRect();if(r.width>0)render.__dx=x+42*s+((d.left+d.width/2)-(r.left+r.width/2))/(r.width/(84*s))-42*s}
  const n1=Math.floor(cl((t-1.2)/1.0)*30);const A='SEP 2023 · DAY ONE',B2='';
