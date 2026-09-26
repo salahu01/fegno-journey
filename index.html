@@ -38,6 +38,15 @@ body{height:1400vh}
 .win.lit{background:radial-gradient(circle at 35% 30%,#ffe2b0 0,#f0a456 18%,#a8581f 55%,#3a1d0c)}
 .swin{position:absolute;width:70px;height:120px;background:#07080c;box-shadow:inset 0 0 0 4px #0e0d12,inset 8px 8px 0 4px #0008}
 .ledge{position:absolute;left:0;right:0;height:14px;background:linear-gradient(#34313b,#1a191f 60%,#0c0b10);box-shadow:0 12px 18px #000c}
+/* project window: someone at a desk, back to us, lit by their screen */
+.win.blue .mon{position:absolute;left:30px;top:34px;width:68px;height:46px;border-radius:3px;background:#0d1426;box-shadow:0 0 0 3px #05070d,0 0 26px 6px var(--a,#6ea8ff)}
+.win.blue .mon::before{content:'';position:absolute;inset:6px 7px;background:repeating-linear-gradient(#0000 0 4px,var(--a,#9cc4ff) 4px 6px);-webkit-mask:linear-gradient(90deg,#000 55%,#0000 56% 62%,#000 63% 80%,#0000 81%);mask:linear-gradient(90deg,#000 55%,#0000 56% 62%,#000 63% 80%,#0000 81%);opacity:.75}
+.win.blue .mon::after{content:'';position:absolute;left:30px;bottom:-12px;width:8px;height:12px;background:#05070d}
+.win.blue .desk{position:absolute;left:10px;right:10px;bottom:22px;height:6px;background:#0b0806}
+.win.blue .head{position:absolute;left:47px;bottom:52px;width:28px;height:30px;border-radius:50% 50% 45% 45%;background:#0b0806}
+.win.blue .body{position:absolute;left:32px;bottom:7px;width:58px;height:50px;border-radius:26px 26px 4px 4px;background:#0b0806}
+.win.blue .lamp{position:absolute;right:12px;bottom:28px;width:4px;height:34px;background:#0b0806;transform:rotate(-14deg);transform-origin:bottom}
+.win.blue .lamp::before{content:'';position:absolute;left:-7px;top:-6px;width:18px;height:10px;border-radius:9px 9px 2px 2px;background:#0b0806;box-shadow:0 8px 14px 2px #ffd59a55}
 /* lobby */
 #base{left:0;top:2000px;width:1500px;height:470px;background:repeating-linear-gradient(0deg,#0000 0 3px,#ffffff04 3px 4px),linear-gradient(90deg,#1e1c24,#17161c 50%,#101015)}
 #lobby{position:absolute;left:40px;right:40px;top:150px;height:320px;background:linear-gradient(#ffe9c6,#f3c98e 50%,#d99a55);box-shadow:0 0 120px 30px #ffb86a55;overflow:hidden}
@@ -226,11 +235,12 @@ function pose(ph,A){const aF=A*Math.sin(ph),aB=-aF,bF=0.55*Math.max(0,Math.cos(p
  [d,ax,ay]=legD(50,120,aB,bB);$('legB').setAttribute('d',d);$('footB').setAttribute('d',`M${ax-4} ${ay}h18c3 0 3-6-1-7l-15-2z`);
  const arm=(sx,sy,a)=>{const ex=sx+30*Math.sin(a),ey=sy+30*Math.cos(a),hx=ex+32*Math.sin(a+.25),hy=ey+32*Math.cos(a+.25);return[`M${sx} ${sy}L${ex} ${ey}L${hx} ${hy}`,hx,hy]};
  let[da,hx,hy]=arm(70,50,-aF*.9);$('armF').setAttribute('d',da);$('handF').setAttribute('cx',hx);$('handF').setAttribute('cy',hy);[da]=arm(46,50,aF*.9);$('armB').setAttribute('d',da)}
+const PA=['#8fbcff','#9ee6ff','#b6a8ff','#7fe0c4','#ffb8e0','#a8d8ff'];
 function setWin(o,on,q){const e=o.el;
  if(o.type=='photo'){q=Math.round(q*20)/20;if(o.q===q)return;o.q=q;o.img.style.opacity=q;o.tint.style.opacity=q;e.classList.toggle('on',q>0);return}
  if(o.st===on)return;o.st=on;
  if(o.type=='side'){e.classList.toggle('on',on);return}
- if(o.type=='proj'){if(on){e.classList.add('blue');e.innerHTML='<div class="sil" style="position:absolute;bottom:0;left:38px;width:46px;height:62px;border-radius:22px 22px 4px 4px;background:#0b0806"></div><div class="sil" style="position:absolute;bottom:0;left:24px;width:80px;height:18px;background:#0b0806"></div>'}else{e.classList.remove('blue');e.innerHTML=''}return}
+ if(o.type=='proj'){if(on){e.classList.add('blue');e.style.setProperty('--a',PA[(o.j*3+o.c)%PA.length]);e.innerHTML='<div class="mon"></div><div class="desk"></div><div class="lamp"></div><div class="body"></div><div class="head"></div>'}else{e.classList.remove('blue');e.innerHTML=''}return}
  if(o.type=='bg'){const cls=o.look<3?'warm':'warmdim';if(on){e.classList.add(cls,'bgdim');e.style.setProperty('--lx',(20+H(o.j*3+o.c)*60)+'%');
    if(o.look==0)e.innerHTML='<div class="blinds"></div>';if(o.look==1)e.innerHTML='<div class="curt" style="left:0;width:34%"></div><div class="curt" style="right:0;width:26%"></div>'}
   else{e.classList.remove('warm','warmdim','bgdim');e.innerHTML=''}}}
@@ -240,16 +250,24 @@ function render(t){
  $('fade').style.opacity=1-cl((t-.1)/1.0);
  const fl=t<.3?0:t<.9?([1,0,1,1,0,1][Math.floor((t-.3)*10)]??1):1;['bulb','cone','pool'].forEach(k=>$(k).style.opacity=fl);
  const sg=t<.6?0:t<1.1?([1,0,.4,1,0,1][Math.floor((t-.6)*12)]??1):1;$('sign').querySelector('.t').style.opacity=sg;$('sign').querySelector('img').style.opacity=sg;$('signglow').style.opacity=sg;$('srefl').style.opacity=sg;
- // boy: last few steps to the door, then in
- const ph=t*2*Math.PI*0.9,k=cl((t-.8)/2.4),x=lerp(PORT?930:820,1120,k),walk=t>.8&&t<3.2;
- pose(ph,walk?.42:0);const b=$('boy'),s=lerp(1,.9,k),fy=lerp(804,770,k);
- b.style.left=x+'px';b.style.top=(fy-192*s+(walk?-2*Math.abs(Math.sin(ph)):0))+'px';b.style.width=(84*s)+'px';b.style.height=(192*s)+'px';b.style.opacity=1-cl((t-2.95)/.35);
- $('shadow').style.left=(x-140)+'px';$('shadow').style.top=(fy-14)+'px';$('shadow').style.opacity=b.style.opacity;
+ // boy: walks up, the doors slide open, he steps inside and they close behind him
+ const DX=render.__dx||1120,ph=t*2*Math.PI*0.9,k=cl((t-.8)/2.2),kin=ease(cl((t-3.0)/.7)),walk=t>.8&&t<3.7;
+ const x=lerp(lerp(PORT?930:820,DX,k),DX,kin),s=lerp(lerp(1,.9,k),.78,kin),fy=lerp(lerp(804,770,k),752,kin);
+ pose(ph,walk?.42:0);const b=$('boy');
+ b.style.left=x+'px';b.style.top=(fy-192*s+(walk?-2*Math.abs(Math.sin(ph)):0))+'px';b.style.width=(84*s)+'px';b.style.height=(192*s)+'px';
+ const dOpen=ease(cl((t-2.45)/.45))*(1-ease(cl((t-3.55)/.5)));
+ // once inside he is only seen through the doorway gap, then faintly through the closed glass
+ b.style.opacity=t<3.55?1:t<4.05?1:Math.max(0,.35*(1-cl((t-4.05)/.5)));
+ if(t>3.3&&t<4.05){const d=$('door').getBoundingClientRect(),r=b.getBoundingClientRect(),g=(d.width/2-8)*dOpen,cx=d.left+d.width/2;
+  const L=cl((cx-g-r.left)/r.width)*100,R=cl((r.right-cx-g)/r.width)*100;b.style.clipPath=`inset(0 ${R}% 0 ${L}%)`;
+  if(t>3.55&&g<2)b.style.opacity=.35}else b.style.clipPath='';
+ $('shadow').style.left=(x-140)+'px';$('shadow').style.top=(fy-14)+'px';$('shadow').style.opacity=t<3.1?1:0;
+ if(!render.__dx&&t<3.3){const d=$('door').getBoundingClientRect(),r=b.getBoundingClientRect();if(r.width>0)render.__dx=x+42*s+((d.left+d.width/2)-(r.left+r.width/2))/(r.width/(84*s))-42*s}
  const n1=Math.floor(cl((t-1.2)/1.0)*30);const A='SEP 2023 · DAY ONE',B2='';
  $('l1a').textContent=A.slice(0,n1);$('l1b').textContent=B2.slice(0,Math.max(0,n1-A.length));$('l1c').textContent='';
  const L1=$('lab1');if(PORT){L1.style.right='auto';L1.style.left=(x+42-170)+'px';L1.style.width='340px';L1.style.textAlign='center';L1.style.top='190px';L1.style.transformOrigin='50% 0'}else{L1.style.left='auto';L1.style.right=(1920-x+30)+'px';L1.style.top='560px'}L1.style.opacity=1-cl((t-3.6)/.5);
  $('door').style.filter=`brightness(${1+.35*Math.exp(-Math.pow((t-3.1)/.25,2))})`;
- {const o=ease(cl((t-2.45)/.45))*(1-ease(cl((t-3.35)/.5)));$('door').querySelector('.dl').style.transform=`translateX(${-o*100}%)`;$('door').querySelector('.dr').style.transform=`translateX(${o*100}%)`}
+ {const o=ease(cl((t-2.45)/.45))*(1-ease(cl((t-3.55)/.5)));$('door').querySelector('.dl').style.transform=`translateX(${-o*100}%)`;$('door').querySelector('.dr').style.transform=`translateX(${o*100}%)`}
  // ---- camera
  let S=1,X=0,T=0,ei=-1,frac=0;
  if(t>=E0-.4){ei=Math.min(NE-1,Math.floor((t-E0)/DT));frac=0}
@@ -345,7 +363,7 @@ document.body.dataset.ready=1;
 let fitW=0,fitH=0;
 function fit(){if(innerWidth===fitW&&Math.abs(innerHeight-fitH)<160)return;fitW=innerWidth;fitH=innerHeight;const st=document.getElementById('stage'),vh=document.getElementById('view').clientHeight||innerHeight,a=innerWidth/vh;PORT=a<1;CEN=a<1.5;
  const sc=Math.max(innerWidth/1920,vh/1080);VW=Math.min(1920,1080*a);VH=Math.min(1080,1920/a);UI=Math.max(1,0.62/sc);
- st.style.transform=`translate(-50%,-50%) scale(${sc})`;lastEv=-1;render.__sp=-1;render.__m=-1;window.__dirty=1}
+ st.style.transform=`translate(-50%,-50%) scale(${sc})`;lastEv=-1;render.__sp=-1;render.__m=-1;render.__dx=0;window.__dirty=1}
 addEventListener('resize',fit);fit();
 (()=>{const t0=performance.now();let lastT=-1,prog=0;
  const bar=document.getElementById('bar'),hint=document.getElementById('hint');
