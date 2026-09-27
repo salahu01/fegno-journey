@@ -410,9 +410,8 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{lastEv=-1
 </script><script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" async onload="window.__lenisReady&&window.__lenisReady()"></script>
 <script>
 // hidden visitor counter (nothing is shown on the page). Counts only on the live site.
-// visits = every page open, unique = first open per browser. Open the page once with ?me to stop counting yourself.
+// visits = every page open, unique = first open per browser.
 (()=>{try{if(location.hostname!=='salahu01.github.io')return;
- if(/[?&]me\b/.test(location.search))localStorage.setItem('fj_me','1');if(localStorage.getItem('fj_me'))return;
  const hit=k=>fetch('https://abacus.jasoncameron.dev/hit/fegno-journey-salahu/'+k,{mode:'no-cors',keepalive:true}).catch(()=>{});
  hit('visits');if(!localStorage.getItem('fj_seen')){localStorage.setItem('fj_seen','1');hit('unique')}}catch(e){}})();
 </script></body></html>
