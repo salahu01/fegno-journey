@@ -341,7 +341,7 @@ const SFX=(()=>{let ctx=null,master=null,amb=null,ambG=null,musG=null,on=false,n
  const CH=[[60,67,72,76],[55,67,71,74],[57,64,69,72],[53,65,69,72]];
  function sched(){const la=ctx.currentTime+.25;while(nextNote<la){const c=CH[Math.floor(step/8)%4],k=step%8,m=[0,1,2,3,2,1,2,3][k];
    piano(c[m],nextNote,k==0?.055:.035,.25*Math.sin(step),musG);if(k==0)piano(c[0]-24,nextNote,.05,0,musG);nextNote+=.4;step++}}
- function start(){if(!ctx)init();ctx.resume();on=true;master.gain.setTargetAtTime(.9,ctx.currentTime,.3);nextNote=ctx.currentTime+.1;if(!timer)timer=setInterval(sched,100)}
+ function start(){if(!ctx)init();const r=ctx.resume();on=true;master.gain.setTargetAtTime(.9,ctx.currentTime,.3);nextNote=ctx.currentTime+.1;if(!timer)timer=setInterval(sched,100);return r}
  function stop(){if(!ctx)return;on=false;master.gain.setTargetAtTime(0,ctx.currentTime,.15);clearInterval(timer);timer=null}
  // levels that follow the story: street ambience early, music during the climb
  function levels(t){if(!on)return;const now=ctx.currentTime;ambG.gain.setTargetAtTime(t<6?.18:.07,now,.4);musG.gain.setTargetAtTime(t<3.2?0:t<6?.5:1,now,.6)}
@@ -382,15 +382,17 @@ addEventListener('resize',fit);fit();
  play:'<svg viewBox="0 0 24 24"><path d="M8 5.6c0-1 1.1-1.6 1.9-1.1l9.4 6.4c.7.5.7 1.6 0 2.1l-9.4 6.4c-.8.5-1.9-.1-1.9-1.1z" fill="currentColor"/></svg>',
  pause:'<svg viewBox="0 0 24 24"><rect x="6.5" y="5" width="4" height="14" rx="1.3" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.3" fill="currentColor"/></svg>',
  replay:'<svg viewBox="0 0 24 24"><path d="M5.6 9.5A7 7 0 1 1 5 13.2" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" fill="none"/><path d="M4.2 4.8v5.3h5.3" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'};
- document.getElementById('sndI').innerHTML=IC.sound;document.getElementById('autoI').innerHTML=IC.play;
+ document.getElementById('sndI').innerHTML=IC.mute;document.getElementById('autoI').innerHTML=IC.play;
  const setAuto=v=>{auto=v;btn.setAttribute('aria-pressed',v);document.getElementById('autoI').innerHTML=IC[v?'pause':prog>=.995?'replay':'play'];document.getElementById('autoT').textContent=v?'Pause':(prog>=.995?'Replay':'Auto-play')};
  let sndWant=true;
- const sb=document.getElementById('snd');const setSnd=v=>{sndWant=v;v?SFX.start():SFX.stop();sb.setAttribute('aria-pressed',v);document.getElementById('sndI').innerHTML=IC[v?'sound':'mute']};
+ const sb=document.getElementById('snd');// the icon shows what is actually audible: browsers keep audio locked until the first gesture
+ const showSnd=()=>{const live=sndWant&&SFX.live;sb.setAttribute('aria-pressed',live);document.getElementById('sndI').innerHTML=IC[live?'sound':'mute']};
+ const setSnd=v=>{sndWant=v;if(v){const r=SFX.start();r&&r.then(showSnd,showSnd)}else SFX.stop();showSnd()};
  let unlocking=false;
  sb.addEventListener('click',()=>{if(unlocking){unlocking=false;return}setSnd(!sndWant)}); // first tap on a still-silent page just unlocks the sound
  // sound is on by default; browsers keep audio locked until the first tap/click/key, so start it then
  setSnd(true);
- const unlock=()=>{if(sndWant&&!SFX.live){unlocking=true;setTimeout(()=>unlocking=false,600);SFX.start()}['pointerup','touchend','keydown','click'].forEach(e=>removeEventListener(e,unlock,true))};
+ const unlock=()=>{if(sndWant&&!SFX.live){unlocking=true;setTimeout(()=>unlocking=false,600);setSnd(true)}['pointerup','touchend','keydown','click'].forEach(e=>removeEventListener(e,unlock,true))};
  ['pointerup','touchend','keydown','click'].forEach(e=>addEventListener(e,unlock,true));
  btn.addEventListener('click',()=>{if(!auto&&sndWant&&!SFX.on)setSnd(true);if(!auto&&prog>=.995){lenis?lenis.scrollTo(0,{immediate:true}):scrollTo(0,0);prog=0}setAuto(!auto)});
  const stop=e=>{if(auto&&!(e.target&&e.target.closest&&e.target.closest('#ctrl')))setAuto(false)};
